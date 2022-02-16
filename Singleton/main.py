@@ -1,17 +1,17 @@
-import random
+def singleton(class_):
+    instances = {}
+
+    def get_instance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+
+    return get_instance
 
 
+@singleton
 class Database:
-    _instance = None
-
     def __init__(self):
-        id = random.randint(1, 100)
-        print(f'Id: {id}')
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Database, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
+        print('Loading database from file: ')
 
 
 d1 = Database()
