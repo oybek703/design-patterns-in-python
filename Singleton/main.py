@@ -1,18 +1,19 @@
-class Foo:
+import random
+
+
+class Database:
+    _instance = None
+
+    def __init__(self):
+        id = random.randint(1, 100)
+        print(f'Id: {id}')
+
     def __new__(cls, *args, **kwargs):
-        print('Creating instance: ')
-        instance = super(Foo, cls).__new__(cls)
-        return instance
-
-    def __init__(self, a, b):
-        self.a = a
-        self.b = b
-
-    def __str__(self):
-        return f'{self.a}, {self.b}'
-
-    def bar(self):
-        pass
+        if not cls._instance:
+            cls._instance = super(Database, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
 
 
-foo = Foo(1, 2)
+d1 = Database()
+d2 = Database()
+print(d1 == d2)
