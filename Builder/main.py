@@ -74,7 +74,7 @@ person = pb\
     .works\
         .at('Hi Tech')\
         .as_a('Programmer')\
-        .with_earning(12000)\
+        .with_earning(120000)\
     .build()
 
 print(person)
