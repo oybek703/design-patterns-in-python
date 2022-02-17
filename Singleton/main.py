@@ -1,19 +1,18 @@
-def singleton(class_):
-    instances = {}
+class CEO:
+    __shared_state = {
+        'name': 'Steve',
+        'age': 55
+    }
 
-    def get_instance(*args, **kwargs):
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-
-    return get_instance
-
-
-@singleton
-class Database:
     def __init__(self):
-        print('Loading database from file: ')
+        self.__dict__ = self.__shared_state
+
+    def __str__(self):
+        return f'{self.name} is {self.age} years old.'
 
 
-d1 = Database()
-d2 = Database()
-print(d1 == d2)
+ceo1 = CEO()
+ceo2 = CEO()
+ceo2.age = 60
+print(ceo1)
+print(ceo2)
