@@ -1,41 +1,70 @@
-class CEO:
-    __shared_state = {
-        'name': 'Steve',
-        'age': 55
+import unittest
+
+
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class Database(metaclass=Singleton):
+    def __init__(self):
+        self.population = {}
+        with open('capitals.txt', 'r') as file:
+            lines = file.readlines()
+            for i in range(0, len(lines), 2):
+                self.population[lines[i].strip()] = lines[i + 1].strip()
+
+
+class SingletonRecordFinder:
+    def total_population(self, cities):
+        result = 0
+        for city in cities:
+            result += int(Database().population[city])
+        return result
+
+
+class ConfigurableRecordFinder:
+
+    def __init__(self, db):
+        self.db = db
+
+    def total_population(self, cities):
+        result = 0
+        for city in cities:
+            result += int(self.db.population[city])
+        return result
+
+
+class DummyDatabase:
+    population = {
+        'alpha': 1,
+        'beta': 2,
+        'gamma': 3
     }
 
-    def __init__(self):
-        self.__dict__ = self.__shared_state
 
-    def __str__(self):
-        return f'{self.name} is {self.age} years old.'
+class SingletonTests(unittest.TestCase):
+    def test_is_singleton(self):
+        db1 = Database()
+        db2 = Database()
+        self.assertEqual(db1, db2)
 
+    def test_singleton_total_population(self):
+        """This tests on a live database :("""
+        rf = SingletonRecordFinder()
+        names = ['Tokyo', 'Delhi']
+        tp = rf.total_population(names)
+        self.assertEqual(37435191 + 29399141, tp)
 
-class MonoState:
-    __shared_state = {}
+    ddb = DummyDatabase()
 
-    def __new__(cls, *args, **kwargs):
-        obj = super(MonoState, cls).__new__(cls, *args, **kwargs)
-        obj.__dict__ = cls.__shared_state
-        return obj
-
-
-class CFO(MonoState):
-    def __init__(self):
-        self.name = ''
-        self.money_managed = 0
-
-    def __str__(self):
-        return f'{self.name} manages {self.money_managed}bn.'
+    def test_dependent_total_population(self):
+        crf = ConfigurableRecordFinder(self.ddb)
+        self.assertEqual(4, crf.total_population(['alpha', 'gamma']))
 
 
-cfo1 = CFO()
-cfo1.name = 'Sheryl'
-cfo1.money_managed = 1
-print(cfo1)
-
-cfo2 = CFO()
-cfo2.name = 'Ruth'
-cfo2.money_managed = 10
-print(cfo1)
-print(cfo2)
+unittest.main()
