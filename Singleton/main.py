@@ -11,8 +11,31 @@ class CEO:
         return f'{self.name} is {self.age} years old.'
 
 
-ceo1 = CEO()
-ceo2 = CEO()
-ceo2.age = 60
-print(ceo1)
-print(ceo2)
+class MonoState:
+    __shared_state = {}
+
+    def __new__(cls, *args, **kwargs):
+        obj = super(MonoState, cls).__new__(cls, *args, **kwargs)
+        obj.__dict__ = cls.__shared_state
+        return obj
+
+
+class CFO(MonoState):
+    def __init__(self):
+        self.name = ''
+        self.money_managed = 0
+
+    def __str__(self):
+        return f'{self.name} manages {self.money_managed}bn.'
+
+
+cfo1 = CFO()
+cfo1.name = 'Sheryl'
+cfo1.money_managed = 1
+print(cfo1)
+
+cfo2 = CFO()
+cfo2.name = 'Ruth'
+cfo2.money_managed = 10
+print(cfo1)
+print(cfo2)
