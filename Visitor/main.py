@@ -1,28 +1,31 @@
-class DoubleExpression:
+class Expression:
+    pass
+
+
+class DoubleExpression(Expression):
     def __init__(self, value):
         self.value = value
 
-    def print(self, buffer: 'list'):
-        buffer.append(str(self.value))
 
-    def eval(self):
-        return self.value
-
-
-class AdditionExpression:
+class AdditionExpression(Expression):
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
-    def print(self, buffer):
-        buffer.append('(')
-        self.left.print(buffer)
-        buffer.append('+')
-        self.right.print(buffer)
-        buffer.append(')')
 
-    def eval(self):
-        return self.left.eval() + self.right.eval()
+class ExpressionPrinter:
+    @staticmethod
+    def print(e, buffer):
+        if isinstance(e, DoubleExpression):
+            buffer.append(str(e.value))
+        elif isinstance(e, AdditionExpression):
+            buffer.append('(')
+            ExpressionPrinter.print(e.left, buffer)
+            buffer.append('+')
+            ExpressionPrinter.print(e.right, buffer)
+            buffer.append(')')
+
+    Expression.print = lambda self, b: ExpressionPrinter.print(self, b)
 
 
 exp = AdditionExpression(
@@ -35,4 +38,5 @@ exp = AdditionExpression(
 
 buffer = []
 exp.print(buffer)
-print(''.join(buffer), '=', exp.eval())
+# ExpressionPrinter.print(exp, buffer)
+print(''.join(buffer))
